@@ -1,0 +1,45 @@
+import { Container } from "pixi.js"
+import { ISymbol } from "../interfaces/ISymbol";
+import { Spine } from '@esotericsoftware/spine-pixi-v8';
+
+export class Symbol extends Container implements ISymbol {
+    private _id: number;
+    private _name: string;
+    private _symbolSpine: Spine;
+    private _animation: string
+
+    constructor(id: number, name: string, animation: string, skeleton: string, atlas: string) {
+        super();
+        this._id = id;
+        this._name = name;
+        this._animation = animation;
+        this._symbolSpine = Spine.from({ skeleton: skeleton, atlas: atlas });
+        console.log("animatıonn",animation);
+        this._symbolSpine.state.setAnimation(0, animation, false);
+        this._symbolSpine.state.timeScale = 0;
+        this.addChild(this._symbolSpine);
+    }
+
+    // Required interface property implementations
+    get id(): number {
+        return this._id;
+    }
+
+    get name(): string {
+        return this._name;
+    }
+
+    get symbolSpine(): Spine {
+        return this._symbolSpine;
+    }
+
+    playWinAnimation(): void {
+        const track = this._symbolSpine.state.setAnimation(0,  this._animation, false);
+        this._symbolSpine.state.timeScale = 1;
+        track.trackTime = 0;
+    }
+
+    playBlackoutAnimation(): void {
+       throw new Error("Method not implemented.");
+    }
+}
