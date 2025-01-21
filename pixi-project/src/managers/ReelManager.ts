@@ -3,12 +3,14 @@ import { Reel } from '../components/Reel';
 import { Symbol } from '../components/Symbol';
 import { SYMBOLS_CONFIG } from '../config/symbolsConfig';
 import { REELS_CONFIG } from '../config/reelConfig';
+import gsap from 'gsap';
 
 export class ReelManager {
     private reels: Reel[] = [];
     private reelContainer: Container;
     private readonly REEL_COUNT = 5;
     private readonly SYMBOLS_PER_REEL = 4;
+    private readonly REEL_POSITION = { x: 500, y: -270 };
     private readonly REEL_SPACING = 250;
     private isSpinning: boolean = false;
 
@@ -24,7 +26,7 @@ export class ReelManager {
 
     private createReels(): void {
         for (let i = 0; i < this.REEL_COUNT; i++) {
-            const reel = new Reel({ x: 0, y: 0 });
+            const reel = new Reel();
 
             for (let j = 0; j < this.SYMBOLS_PER_REEL; j++) {
                 const randomConfig = SYMBOLS_CONFIG[REELS_CONFIG[i][j]];
@@ -46,21 +48,19 @@ export class ReelManager {
 
     private positionReels(): void {
         this.reels.forEach((reel, index) => {
-            reel.x = index * this.REEL_SPACING;
-            reel.y = 0;
+            reel.x = (index * this.REEL_SPACING)- this.REEL_POSITION.x;
+            reel.y = this.REEL_POSITION.y;
         });
     }
-
     public async spin(): Promise<void> {
         if (this.isSpinning) return;
-
         this.isSpinning = true;
 
         const spinPromises = this.reels.map((reel, index) => {
             return new Promise<void>(resolve => {
-                setTimeout(() => {
+                gsap.delayedCall(index * 0.2, () => {
                     reel.spin().then(() => resolve());
-                }, index * 200);
+                });
             });
         });
 
