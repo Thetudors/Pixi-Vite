@@ -15,9 +15,12 @@ import { GameManager } from "./managers/GameManager";
       event.preventDefault(); // Prevent page scroll
       gameManager.spin();
     }
+    if (event.code === 'KeyR') {
+      gameManager.stop();
+    }
   });
 
-  // Listen for animate update
-  engine.app.ticker.add((time) => {
-  });
+  // // Listen for animate update
+  // engine.app.ticker.add((time) => {
+  // });
 })();

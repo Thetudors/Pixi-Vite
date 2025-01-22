@@ -3,11 +3,12 @@ import { resize } from './resize/resize';
 
 export class Engine {
     private _app: Application;
-    private mainContainer: Container = new Container();
-    private gameWidth: number = 1920;
-    private gameHeight: number = 1080;
-    private minWidth: number = 800;
-    private minHeight: number = 600;
+    private _mainContainer: Container = new Container();
+    private _gameWidth: number = 1920;
+    private _gameHeight: number = 1080;
+    private _minWidth: number = 800;
+    private _minHeight: number = 600;
+    private readonly _backgroudColor: string = '#14042b';
 
     constructor() {
         this._app = new Application();
@@ -15,11 +16,11 @@ export class Engine {
     }
 
     async init() {
-        await this._app.init({ background: '#1099bb', resizeTo: window });
+        await this._app.init({ background: this._backgroudColor, resizeTo: window });
         document.getElementById("pixi-container")!.appendChild(this._app.canvas);
 
-        this.mainContainer = new Container();
-        this._app.stage.addChild(this.mainContainer);
+        this._mainContainer = new Container();
+        this._app.stage.addChild(this._mainContainer);
 
         // Add resize event listener
         window.addEventListener('resize', this.handleResize.bind(this));
@@ -38,10 +39,10 @@ export class Engine {
 
     private handleResize(): void {
         const { width, height } = resize(
-            this.gameWidth,
-            this.gameHeight,
-            this.minWidth,
-            this.minHeight,
+            this._gameWidth,
+            this._gameHeight,
+            this._minWidth,
+            this._minHeight,
             true  // preserveAspectRatio'yu true yapıyoruz
         );
 
@@ -50,21 +51,20 @@ export class Engine {
 
         // Calculate scale for the container
         const scale = Math.min(
-            width / this.gameWidth,
-            height / this.gameHeight
+            width / this._gameWidth,
+            height / this._gameHeight
         );
 
         // Update container position and scale
-        this.mainContainer.scale.set(scale);
-        this.mainContainer.x = width / 2;
-        this.mainContainer.y = height / 2;
+        this._mainContainer.scale.set(scale);
+        this._mainContainer.x = width / 2;
+        this._mainContainer.y = height / 2;
 
     }
 
     public addChild(object: any) {
-        // Position sprite relative to mainContainer
         object.position.set(0, 0); // This will be center since mainContainer is centered
-        this.mainContainer.addChild(object);
+        this._mainContainer.addChild(object);
     }
 
     public get app() {

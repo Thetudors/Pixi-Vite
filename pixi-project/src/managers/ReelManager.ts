@@ -1,4 +1,4 @@
-import { Container } from 'pixi.js';
+import { Container, Graphics } from 'pixi.js';
 import { Reel } from '../components/Reel';
 import { Symbol } from '../components/Symbol';
 import { SYMBOLS_CONFIG } from '../config/symbolsConfig';
@@ -7,15 +7,18 @@ import gsap from 'gsap';
 
 export class ReelManager {
     private reels: Reel[] = [];
-    private reelContainer: Container;
+    private _reelContainer: Container;
+    private _parentContainer: Container;
     private readonly REEL_COUNT = 5;
-    private readonly SYMBOLS_PER_REEL = 4;
-    private readonly REEL_POSITION = { x: 500, y: -270 };
+    private readonly SYMBOLS_PER_REEL = 6;
+    private readonly REEL_POSITION = { x: 500, y: -445 };
     private readonly REEL_SPACING = 250;
-    private isSpinning: boolean = false;
-
+    private _isSpinning: boolean = false;
+    private _reelMask: Graphics = new Graphics();
     constructor(container: Container) {
-        this.reelContainer = container;
+        this._parentContainer = container;
+        this._reelContainer = new Container({label: 'reelContainer'});
+        container.addChild(this._reelContainer);
         this.initReels();
     }
 
@@ -25,8 +28,12 @@ export class ReelManager {
     }
 
     private createReels(): void {
+        this._reelMask = new Graphics().rect(-600, -360, 1200, 725).fill(0x000000);
+        this._reelMask
+        this._parentContainer.addChild(this._reelMask);
+        this._reelContainer.mask = this._reelMask;
         for (let i = 0; i < this.REEL_COUNT; i++) {
-            const reel = new Reel();
+            const reel = new Reel(i);
 
             for (let j = 0; j < this.SYMBOLS_PER_REEL; j++) {
                 const randomConfig = SYMBOLS_CONFIG[REELS_CONFIG[i][j]];
@@ -42,19 +49,19 @@ export class ReelManager {
             }
 
             this.reels.push(reel);
-            this.reelContainer.addChild(reel);
+            this._reelContainer.addChild(reel);
         }
     }
 
     private positionReels(): void {
         this.reels.forEach((reel, index) => {
-            reel.x = (index * this.REEL_SPACING)- this.REEL_POSITION.x;
+            reel.x = (index * this.REEL_SPACING) - this.REEL_POSITION.x;
             reel.y = this.REEL_POSITION.y;
         });
     }
     public async spin(): Promise<void> {
-        if (this.isSpinning) return;
-        this.isSpinning = true;
+        if (this._isSpinning) return;
+        this._isSpinning = true;
 
         const spinPromises = this.reels.map((reel, index) => {
             return new Promise<void>(resolve => {
@@ -65,7 +72,11 @@ export class ReelManager {
         });
 
         await Promise.all(spinPromises);
-        this.isSpinning = false;
+        this._isSpinning = false;
+    }
+
+    public stop(): void {
+        this.reels.forEach(reel => reel.stop());
     }
 
     public getReels(): Reel[] {
@@ -73,7 +84,7 @@ export class ReelManager {
     }
 
     public centerReels(screenWidth: number, screenHeight: number): void {
-        this.reelContainer.x = screenWidth / 2 - (this.REEL_COUNT * this.REEL_SPACING) / 2;
-        this.reelContainer.y = screenHeight / 2 - 200;
+        this._reelContainer.x = screenWidth / 2 - (this.REEL_COUNT * this.REEL_SPACING) / 2;
+        this._reelContainer.y = screenHeight / 2 - 200;
     }
 }

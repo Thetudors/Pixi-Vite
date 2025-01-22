@@ -1,6 +1,7 @@
 import { Container } from "pixi.js"
 import { ISymbol } from "../interfaces/ISymbol";
 import { Spine } from '@esotericsoftware/spine-pixi-v8';
+import { SYMBOLS_CONFIG } from "../config/symbolsConfig";
 
 export class Symbol extends Container implements ISymbol {
     private _id: number;
@@ -14,7 +15,6 @@ export class Symbol extends Container implements ISymbol {
         this._name = name;
         this._animation = animation;
         this._symbolSpine = Spine.from({ skeleton: skeleton, atlas: atlas });
-        console.log("animatıonn",animation);
         this._symbolSpine.state.setAnimation(0, animation, false);
         this._symbolSpine.state.timeScale = 0;
         this.addChild(this._symbolSpine);
@@ -31,6 +31,12 @@ export class Symbol extends Container implements ISymbol {
 
     get symbolSpine(): Spine {
         return this._symbolSpine;
+    }
+
+    public setSymbolIndex(index: number): void {
+        this._id = SYMBOLS_CONFIG[index].id;
+        this._symbolSpine.state.setAnimation(0, SYMBOLS_CONFIG[index].animation, false);
+        this._symbolSpine.state.timeScale = 0;
     }
 
     playWinAnimation(): void {
