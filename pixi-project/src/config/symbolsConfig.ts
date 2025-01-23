@@ -35,14 +35,14 @@ export const SYMBOLS_CONFIG: ISymbolConfig[] = [
         value: 300,
         odds: 30
     },
-    { 
+    {//4
         id: 5, 
         name: "orange", 
         animation: "orange_win", 
         value: 300,
         odds: 30
     },
-    { 
+    {//5
         id: 6, 
         name: "plum", 
         animation: "plum_win", 

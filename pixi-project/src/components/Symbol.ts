@@ -1,4 +1,4 @@
-import { Container } from "pixi.js"
+import { Container, BlurFilter } from "pixi.js"
 import { ISymbol } from "../interfaces/ISymbol";
 import { Spine } from '@esotericsoftware/spine-pixi-v8';
 import { SYMBOLS_CONFIG } from "../config/symbolsConfig";
@@ -39,13 +39,22 @@ export class Symbol extends Container implements ISymbol {
         this._symbolSpine.state.timeScale = 0;
     }
 
+    public setBlurEffect(isBlurred: boolean): void {
+        if (isBlurred) {
+            const blurFilter = new BlurFilter({strengthX: 0, strengthY: 6 });
+            this._symbolSpine.filters = [blurFilter];
+        } else {
+            this._symbolSpine.filters = [];
+        }
+    }
+
     playWinAnimation(): void {
-        const track = this._symbolSpine.state.setAnimation(0,  this._animation, false);
+        const track = this._symbolSpine.state.setAnimation(0, this._animation, false);
         this._symbolSpine.state.timeScale = 1;
         track.trackTime = 0;
     }
 
     playBlackoutAnimation(): void {
-       throw new Error("Method not implemented.");
+        throw new Error("Method not implemented.");
     }
 }

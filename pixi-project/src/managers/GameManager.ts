@@ -38,6 +38,7 @@ export class GameManager {
     }
 
     private checkWin(): void {
+        console.log("TESTTT Bitti");
         // const reels = this.reelManager.getReels();
         // Implement win checking logic
     }

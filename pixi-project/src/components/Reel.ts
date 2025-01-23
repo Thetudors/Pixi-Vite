@@ -10,6 +10,8 @@ export class Reel extends Container implements IReel {
     private _reelPosition: number;
     private _isSpinning: boolean = false;
     private readonly symbolHeight: number = 180;
+    private readonly reelOriginPosition: number = -445;
+    private readonly spinDuration: number = 3000;
 
     private isDataReceived: boolean = false;
 
@@ -60,38 +62,44 @@ export class Reel extends Container implements IReel {
     public async spin(): Promise<void> {
         setTimeout(() => {
             this.isDataReceived = true;
-        }, 500);
+        }, this.spinDuration);
         return new Promise<void>((resolve) => {
             this._isSpinning = true;
-            let reelOrigin = this.position.y;
-            let loopTween = gsap.to(this, {
-                duration: 0.05, y: `+=${this.symbolHeight}`, ease: "none", onComplete: () => {
-                    if (!this.isDataReceived) {
-                        this.swapSymbol();
-                        loopTween.restart();
-                    } else {
-                        // this.position.y -= this.symbolHeight;
-                        let stopTween = gsap.fromTo(this, { y: reelOrigin }, {
-                            duration: 0.55, y: `+=${this.symbolHeight}`, ease: "back.out(1.7)",
-                            onStart: () => {
-                                this.setLastSymbolIndexs();
-                            },
-                            onComplete: () => {
-                                // this.position.y = reelOrigin;
+            let spinStartTween = gsap.to(this, {
+                duration: 0.25, y: `+=${this.symbolHeight}`, ease: "power4.in",
+                onComplete: () => {
+                    this.setBlurEffectSymbols(true);
+                    let loopTween = gsap.fromTo(this, { y: this.reelOriginPosition }, {
+                        duration: 0.04, y: `+=${this.symbolHeight}`, ease: "none", onComplete: () => {
+                            if (!this.isDataReceived) {
+                                this.swapSymbol();
+                                loopTween.restart();
+                            } else {
+                                let stopTween = gsap.fromTo(this, { y: this.reelOriginPosition }, {
+                                    duration: 0.55, y: `+=${this.symbolHeight}`, ease: "back.out(1.7)",
+                                    onStart: () => {
+                                        this.setBlurEffectSymbols(false);
+                                        this.setLastSymbolIndexs();
+                                    },
+                                    onComplete: () => {
+                                        this._isSpinning = false;
+                                        resolve();
+                                    }
+                                })
                             }
-                        })
-                    }
-                    this._isSpinning = false;
-                    resolve();
+
+                        }
+                    });
                 }
-            });
+            })
+
         });
     }
 
     private swapSymbol(): void {
         const lastSymbol = this._symbols.pop()!;
         lastSymbol.y = 0;
-        lastSymbol.setSymbolIndex(Math.floor(Math.random() * 6));
+        lastSymbol.setSymbolIndex((Math.floor(Math.random() * 6)));
         this._symbols.forEach((symbol) => {
             symbol.y += this.symbolHeight;
         });
@@ -103,6 +111,12 @@ export class Reel extends Container implements IReel {
             this._symbols[i].setSymbolIndex(REELS_CONFIG[this._reelIndex][i + 1]);
             this.isDataReceived = false;
         }
+    }
+
+    private setBlurEffectSymbols(isBlurred: boolean): void {
+        this._symbols.forEach((symbol) => {
+            symbol.setBlurEffect(isBlurred);
+        });
     }
 
     public stop(): void {
