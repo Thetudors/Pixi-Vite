@@ -9,16 +9,17 @@ export class ReelManager {
     private reels: Reel[] = [];
     private _reelContainer: Container;
     private _parentContainer: Container;
+    private _displaySymbols: Symbol[][] = [];
     private readonly REEL_COUNT = 5;
     private readonly SYMBOLS_PER_REEL = 6;
     private readonly REEL_POSITION = { x: 500, y: -445 };
     private readonly REEL_SPACING = 250;
     private _isSpinning: boolean = false;
     private _reelMask: Graphics = new Graphics();
-    constructor(container: Container) {
-        this._parentContainer = container;
-        this._reelContainer = new Container({label: 'reelContainer'});
-        container.addChild(this._reelContainer);
+    constructor(parentContainer: Container) {
+        this._parentContainer = parentContainer;
+        this._reelContainer = new Container({ label: 'reelContainer' });
+        parentContainer.addChild(this._reelContainer);
         this.initReels();
     }
 
@@ -63,6 +64,7 @@ export class ReelManager {
         if (this._isSpinning) return;
         this._isSpinning = true;
 
+
         const spinPromises = this.reels.map((reel, index) => {
             return new Promise<void>(resolve => {
                 gsap.delayedCall(index * 0.2, () => {
@@ -72,7 +74,17 @@ export class ReelManager {
         });
 
         await Promise.all(spinPromises);
+        this.updateDisplaySymbols();
         this._isSpinning = false;
+    }
+
+    private updateDisplaySymbols(): void {
+        for (let reelIndex = 0; reelIndex < this.reels.length; reelIndex++) {
+            this._displaySymbols[reelIndex] = [];
+            for (let symbolIndex = 1; symbolIndex < this.reels[reelIndex].symbols.length - 1; symbolIndex++) {
+                this._displaySymbols[reelIndex].push(this.reels[reelIndex].symbols[symbolIndex]);
+            }
+        }
     }
 
     public stop(): void {
@@ -81,6 +93,14 @@ export class ReelManager {
 
     public getReels(): Reel[] {
         return this.reels;
+    }
+
+    public get displaySymbols(): Symbol[][] {
+        return this._displaySymbols;
+    }
+
+    public get isSpinning(): boolean {
+        return this._isSpinning
     }
 
     public centerReels(screenWidth: number, screenHeight: number): void {

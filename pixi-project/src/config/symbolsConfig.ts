@@ -8,42 +8,42 @@ export interface ISymbolConfig {
 
 export const SYMBOLS_CONFIG: ISymbolConfig[] = [
     {//0 
-        id: 1, 
+        id: 0, 
         name: "bell", 
         animation: "bell_win", 
         value: 500,
         odds: 20
     },
     {//1
-        id: 2, 
+        id: 1, 
         name: "cherry", 
         animation: "cherry_win", 
         value: 100,
         odds: 40
     },
     {//2
-        id: 3, 
+        id: 2, 
         name: "lemon", 
         animation: "lemon_win", 
         value: 1000,
         odds: 10
     },
     {//3
-        id: 4, 
+        id: 3, 
         name: "moneybag", 
         animation: "money_bag_win", 
         value: 300,
         odds: 30
     },
     {//4
-        id: 5, 
+        id: 4, 
         name: "orange", 
         animation: "orange_win", 
         value: 300,
         odds: 30
     },
     {//5
-        id: 6, 
+        id: 5, 
         name: "plum", 
         animation: "plum_win", 
         value: 300,

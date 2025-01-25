@@ -1,11 +1,13 @@
 import { Container, Sprite } from 'pixi.js';
 import { Engine } from '../core/engine';
 import { ReelManager } from './ReelManager';
+import { WinLineController } from '../components/WinLineController';
 
 export class GameManager {
     private engine: Engine;
     private _gameContainer: Container;
     private _reelManager: ReelManager;
+    private _winLineController: WinLineController;
     private _background: Sprite;
 
     constructor(engine: Engine) {
@@ -21,6 +23,11 @@ export class GameManager {
 
         // Initialize reels after background
         this._reelManager = new ReelManager(this._gameContainer);
+
+        //Create WinLineCotroller
+        this._winLineController = new WinLineController(this._reelManager, this._gameContainer);
+
+
         this.initGame();
     }
 
@@ -29,16 +36,20 @@ export class GameManager {
     }
 
     public async spin(): Promise<void> {
+        if (this._reelManager.isSpinning)
+            return;
+        this._winLineController.stopWinLoopAnimation();
         await this._reelManager.spin();
         this.checkWin();
     }
 
-    public  stop(): void {
+    public stop(): void {
         this._reelManager.stop();
     }
 
     private checkWin(): void {
         console.log("TESTTT Bitti");
+        this._winLineController.checkWins();
         // const reels = this.reelManager.getReels();
         // Implement win checking logic
     }

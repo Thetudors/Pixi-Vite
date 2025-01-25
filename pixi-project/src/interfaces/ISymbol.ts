@@ -4,8 +4,10 @@ export interface ISymbol {
     id: number;
     name: string;
     symbolSpine: Spine;
+    isBlackOut:boolean;
     playWinAnimation(): void;
-    playBlackoutAnimation(): void;
+    stopWinAnimation(): void;
     setSymbolIndex(index: number): void;
     setBlurEffect(isBlured: boolean): void;
+    stopWinAnimation(): void;
 }
