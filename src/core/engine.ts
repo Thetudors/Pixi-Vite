@@ -1,5 +1,7 @@
 import { Application, Container, Assets } from 'pixi.js';
 import { resize } from './resize/resize';
+import { SoundManager } from './sound/SoundManager';
+import { soundList } from './sound/sounds';
 
 export class Engine {
     private _app: Application;
@@ -16,7 +18,7 @@ export class Engine {
     }
 
     async init() {
-        await this._app.init({ background: this._backgroudColor, resizeTo: window });
+        await this._app.init({ background: this._backgroudColor, resizeTo: window, resolution: 1, antialias: false, autoDensity: true });
         document.getElementById("pixi-container")!.appendChild(this._app.canvas);
 
         this._mainContainer = new Container();
@@ -26,15 +28,20 @@ export class Engine {
         window.addEventListener('resize', this.handleResize.bind(this));
         this.handleResize(); // Initial resize
         await this.loadAssets();
+        await this.loadSounds();
         return this;
     }
 
     private async loadAssets() {
         await Assets.load([
-            { alias: "symbols-atlas", src: "/assets/symbols_win.atlas" },
-            { alias: "symbols-json", src: "/assets/symbols_win.json" },
-            { alias: "reels", src: "/assets/reels.jpg" },
+            { alias: "symbols-atlas", src: "/assets/spines/symbols_win.atlas" },
+            { alias: "symbols-json", src: "/assets/spines/symbols_win.json" },
+            { alias: "reels", src: "/assets/sprites/reels.jpg" },
         ]);
+    }
+
+    private async loadSounds() {
+        await SoundManager.instance.loadSounds(soundList);
     }
 
     private handleResize(): void {

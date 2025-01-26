@@ -2,6 +2,7 @@ import { Container, Text, TextStyle } from "pixi.js"
 import { ReelManager } from "../managers/ReelManager"
 import { WIN_LINES } from "../config/winLineConfig";
 import gsap from 'gsap';
+import { SoundManager } from "../core/sound/SoundManager";
 
 const style = new TextStyle({
     fontSize: 72,
@@ -27,8 +28,6 @@ export class WinLineController extends Container {
     private readonly WIN_LOOP_DELAY: number = 1.5;
     private _currentWinIndex: number = 0;
 
-
-
     constructor(reelManager: ReelManager, parentContainer: Container) {
         super();
         this._reelManager = reelManager;
@@ -52,7 +51,7 @@ export class WinLineController extends Container {
             yoyo: true,
             repeat: 1,
         });
-        this._winText.text ="$ "+winAmount;
+        this._winText.text = "$ " + winAmount;
     }
 
     public checkWins(): void {
@@ -86,6 +85,7 @@ export class WinLineController extends Container {
     }
 
     private playWinAnimation(win: { symbol: number, positions: number[][], winAmount: number }): void {
+        SoundManager.instance.playSound("WinEffect", { loop: false, volume: 0.25 });
         this._reelManager.displaySymbols.forEach(row => {
             row.forEach(symbol => {
                 if (symbol) {

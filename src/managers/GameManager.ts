@@ -26,13 +26,6 @@ export class GameManager {
 
         //Create WinLineCotroller
         this._winLineController = new WinLineController(this._reelManager, this._gameContainer);
-
-
-        this.initGame();
-    }
-
-    private initGame(): void {
-        // this.centerGame();
     }
 
     public async spin(): Promise<void> {
@@ -40,18 +33,11 @@ export class GameManager {
             return;
         this._winLineController.stopWinLoopAnimation();
         await this._reelManager.spin();
-        this.checkWin();
+        this._winLineController.checkWins();
     }
 
     public stop(): void {
         this._reelManager.stop();
-    }
-
-    private checkWin(): void {
-        console.log("TESTTT Bitti");
-        this._winLineController.checkWins();
-        // const reels = this.reelManager.getReels();
-        // Implement win checking logic
     }
 
 }

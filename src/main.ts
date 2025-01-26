@@ -8,19 +8,14 @@ import { GameManager } from "./managers/GameManager";
   // Initialize game manager
   const gameManager = new GameManager(engine);
 
-  // Listen for spin button click
   // Listen for spacebar press
   window.addEventListener('keydown', (event) => {
     if (event.code === 'Space') {
-      event.preventDefault(); // Prevent page scroll
+      event.preventDefault();
       gameManager.spin();
     }
     if (event.code === 'KeyR') {
       gameManager.stop();
     }
   });
-
-  // // Listen for animate update
-  // engine.app.ticker.add((time) => {
-  // });
 })();

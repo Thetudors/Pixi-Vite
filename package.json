@@ -6,10 +6,12 @@
   "scripts": {
     "start": "npm run dev",
     "build": "tsc && vite build",
-    "dev": "cross-env BROWSER=chrome BROWSER_ARGS=--new-window vite"
+    "dev": "vite",
+    "chrome":"cross-env BROWSER=chrome BROWSER_ARGS=--new-window vite"
   },
   "dependencies": {
     "@esotericsoftware/spine-pixi-v8": "~4.2.0",
+    "@pixi/sound": "^6.0.1",
     "gsap": "^3.12.7",
     "pixi.js": "^8.6.2"
   },

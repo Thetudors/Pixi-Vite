@@ -10,12 +10,16 @@ export class ReelManager {
     private _reelContainer: Container;
     private _parentContainer: Container;
     private _displaySymbols: Symbol[][] = [];
+    private _isSpinning: boolean = false;
+    private _reelMask: Graphics = new Graphics();
+
     private readonly REEL_COUNT = 5;
     private readonly SYMBOLS_PER_REEL = 6;
     private readonly REEL_POSITION = { x: 500, y: -445 };
     private readonly REEL_SPACING = 250;
-    private _isSpinning: boolean = false;
-    private _reelMask: Graphics = new Graphics();
+    private readonly ANIMATION_SKELETON = "symbols-json";
+    private readonly ANIMATION_ATLAS = "symbols-atlas";
+
     constructor(parentContainer: Container) {
         this._parentContainer = parentContainer;
         this._reelContainer = new Container({ label: 'reelContainer' });
@@ -43,8 +47,8 @@ export class ReelManager {
                     randomConfig.id,
                     randomConfig.name,
                     randomConfig.animation,
-                    "symbols-json",
-                    "symbols-atlas"
+                    this.ANIMATION_SKELETON,
+                    this.ANIMATION_ATLAS
                 );
                 reel.addSymbol(symbol);
             }
@@ -63,7 +67,6 @@ export class ReelManager {
     public async spin(): Promise<void> {
         if (this._isSpinning) return;
         this._isSpinning = true;
-
 
         const spinPromises = this.reels.map((reel, index) => {
             return new Promise<void>(resolve => {
@@ -91,20 +94,11 @@ export class ReelManager {
         this.reels.forEach(reel => reel.stop());
     }
 
-    public getReels(): Reel[] {
-        return this.reels;
-    }
-
     public get displaySymbols(): Symbol[][] {
         return this._displaySymbols;
     }
 
     public get isSpinning(): boolean {
         return this._isSpinning
-    }
-
-    public centerReels(screenWidth: number, screenHeight: number): void {
-        this._reelContainer.x = screenWidth / 2 - (this.REEL_COUNT * this.REEL_SPACING) / 2;
-        this._reelContainer.y = screenHeight / 2 - 200;
     }
 }

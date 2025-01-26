@@ -7,23 +7,21 @@ import { REELS_CONFIG, RANDOM_REELS_CONFIG } from '../config/reelConfig';
 export class Reel extends Container implements IReel {
     private _symbols: Symbol[] = [];
     private _reelIndex: number = 0;
-    private _reelPosition: number;
     private _isSpinning: boolean = false;
+    private _isDataReceived: boolean = false;
+
     private readonly SYMBOL_HEIGHT: number = 180;
     private readonly REEL_ORIGIN_POSITION: number = -445;
     private readonly SPIN_DURATION: number = 3000;
 
-    private isDataReceived: boolean = false;
-
     constructor(reelIndex: number) {
         super();
         this._reelIndex = reelIndex;
-        this._reelPosition = 0;
         this.addChild(this);
     }
 
-    get reelPosition(): number {
-        return this._reelPosition;
+    get reelIndex(): number {
+        return this._reelIndex;
     }
 
     get isSpinning(): boolean {
@@ -32,6 +30,10 @@ export class Reel extends Container implements IReel {
 
     get symbols(): Symbol[] {
         return this._symbols;
+    }
+
+    get isDataReceived(): boolean {
+        return this._isDataReceived;
     }
 
     public addSymbol(symbol: Symbol): void {
@@ -61,21 +63,23 @@ export class Reel extends Container implements IReel {
 
     public async spin(): Promise<void> {
         setTimeout(() => {
-            this.isDataReceived = true;
+            this._isDataReceived = true;
         }, this.SPIN_DURATION);
         return new Promise<void>((resolve) => {
             this._isSpinning = true;
-            let spinStartTween = gsap.to(this, {
+            //START TWEEN ANIMATON
+            gsap.to(this, {
                 duration: 0.25, y: `+=${this.SYMBOL_HEIGHT}`, ease: "power4.in",
                 onComplete: () => {
                     this.setBlurEffectSymbols(true);
-                    let loopTween = gsap.fromTo(this, { y: this.REEL_ORIGIN_POSITION }, {
+                    const loopTween = gsap.fromTo(this, { y: this.REEL_ORIGIN_POSITION }, {
                         duration: 0.04, y: `+=${this.SYMBOL_HEIGHT}`, ease: "none", onComplete: () => {
-                            if (!this.isDataReceived) {
+                            if (!this._isDataReceived) {
                                 this.swapSymbol();
                                 loopTween.restart();
                             } else {
-                                let stopTween = gsap.fromTo(this, { y: this.REEL_ORIGIN_POSITION - this.SYMBOL_HEIGHT }, {
+                                //STOP TWEEN ANIMATON
+                                gsap.fromTo(this, { y: this.REEL_ORIGIN_POSITION - this.SYMBOL_HEIGHT }, {
                                     duration: 0.55, y: `+=${this.SYMBOL_HEIGHT}`, ease: "back.out(1.7)",
                                     onStart: () => {
                                         this.setBlurEffectSymbols(false);
@@ -87,12 +91,10 @@ export class Reel extends Container implements IReel {
                                     }
                                 })
                             }
-
                         }
                     });
                 }
             })
-
         });
     }
 
@@ -109,7 +111,7 @@ export class Reel extends Container implements IReel {
     private setLastSymbolIndexs(): void {
         for (let i = 0; i < this._symbols.length - 1; i++) {
             this._symbols[i].setSymbolIndex(REELS_CONFIG[this._reelIndex][i]);
-            this.isDataReceived = false;
+            this._isDataReceived = false;
         }
     }
 
@@ -121,6 +123,6 @@ export class Reel extends Container implements IReel {
 
     public stop(): void {
         this._isSpinning = false;
-        this.isDataReceived = false;
+        this._isDataReceived = false;
     }
 }

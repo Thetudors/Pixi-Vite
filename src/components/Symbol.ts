@@ -22,7 +22,6 @@ export class Symbol extends Container implements ISymbol {
         this.addChild(this._symbolSpine);
     }
 
-
     get id(): number {
         return this._id;
     }
@@ -38,6 +37,7 @@ export class Symbol extends Container implements ISymbol {
     get isBlackOut(): boolean {
         return this._isBlackOut;
     }
+    
     public setSymbolIndex(index: number): void {
         this._id = SYMBOLS_CONFIG[index].id;
         this._name = SYMBOLS_CONFIG[index].name;
@@ -73,5 +73,4 @@ export class Symbol extends Container implements ISymbol {
         }
         this._isBlackOut = value;
     }
-
 }
